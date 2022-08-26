@@ -335,8 +335,20 @@ int bstDelete(BSTNodePtr *root, int data)
         return -1; // The data doesn't exists in the tree;
     }
 
+
+    // Case 0 : Delete Root
+    if (!prev && (!cur->left || !cur->right)) {
+        if (!cur->left && !cur->right) {
+            *root = NULL;
+        } else if (!cur->left) {
+            *root = cur->right;
+        } else {
+            *root = cur->left;
+        }
+    }
+
     // Case 1 - If the left side is null then assign the right to the parent
-    if (cur->left == NULL)
+    else if (cur->left == NULL)
     {
         if (prev->left == cur)
         {
@@ -475,17 +487,30 @@ int main(int agrv, char *argv[])
     bstInsert(&root, 19);
     bstInsert(&root, 4);
     bstInsert(&root, 60);
+    bstInsert(&root, 2);
+    bstInsert(&root, 1);
 
-    bstDelete(&root, 3);
-    bstDelete(&root, 15);
+    bstDelete(&root, 4);
+    bstDelete(&root, 2);
+    bstDelete(&root, 12);
     bstDelete(&root, 10);
-    bstDelete(&root, 9);
+    bstDelete(&root, 20);
+    bstDelete(&root, 60);
+    bstDelete(&root, 15);
+    bstDelete(&root, 15);
+    bstDelete(&root, 3);
+    bstDelete(&root, 1);
+    bstDelete(&root, 1);
+    bstDelete(&root, 19);
+    bstDelete(&root, 17);
+    bstDelete(&root, 14);
+    bstDelete(&root, 13);
+    bstDelete(&root, 5);
+    bstDelete(&root, 7);
 
-    searchHelper(&root, 4);
+    // searchHelper(&root, 4);
+    displayBST(root, "tree.gv");
 
-
-    displayBST(root, "bstGraph.gv");
-
-    system("dot -Tpng bstGraph.gv -o bstGraph.png");
+    system("dot -Tpng tree.gv -o tree.png");
 
 }

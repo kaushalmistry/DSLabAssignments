@@ -77,6 +77,8 @@ edgeListNodePtr createEdgeNode(int vertex)
     newEdgeNode->vertex = vertex;
     newEdgeNode->edgeType = 1;
     newEdgeNode->linkPtr = NULL;
+
+    return newEdgeNode;
 }
 
 /**

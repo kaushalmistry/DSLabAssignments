@@ -226,7 +226,7 @@ int main()
 {
     myGraph G;
 
-    readDirectedGraph("./TestCases/mediumDG.txt", &G);
+    readDirectedGraph("./TestCases/digraph2.txt", &G);
 
     printf("#vertices = %d #edged = %d\n", G.numOfVertices, G.numOfEdges);
     printAdjList(&G);
@@ -247,6 +247,8 @@ int main()
     myGraph compGraph;
     printf("\n\nAll connected Component\n");
     SCC(&G,&compGraph);
+    printAdjList(&compGraph);
+
     int len = compGraph.numOfVertices;
     for(int i=0;i<len;i++){
     	if(compGraph.adjList[i].dfsNum==1){

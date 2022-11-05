@@ -209,6 +209,8 @@ int** createAdjancencyMatrix(int n) {
     for (int i = 0; i < n; i++) {
         adjMat[i] = (int*) calloc (n, sizeof(int));
     }
+
+    return adjMat;
 }
 
 
@@ -233,6 +235,7 @@ graph* creaeGraphNode(hNode* hnode) {
     newGraphNode->key = hnode->cName;
     newGraphNode->value = hnode->value;
     newGraphNode->next = NULL;
+    return newGraphNode;
 }
 
 listNode* createListNode(hNode* hnode) {
@@ -240,6 +243,7 @@ listNode* createListNode(hNode* hnode) {
     newGraphNode->key = hnode->cName;
     newGraphNode->value = hnode->value;
     newGraphNode->next = NULL;
+    return newGraphNode;
 }
 
 graph** createAdjacencyList(int* inDeg, char* fileName, hTable* table) {

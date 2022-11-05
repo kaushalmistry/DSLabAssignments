@@ -98,21 +98,113 @@ void dfs(myGraph *G)
     destroyStack(&s);
 }
 
+void dfs2(myGraph *G)
+{
+    int clock = 1;
+    int compCnt = 0;
+    int noOfVertices = G->numOfVertices;
+    edgeListNodePtr curHead[noOfVertices];
+
+
+    int *visited = (int *)malloc(sizeof(int) * G->numOfVertices);
+    int *parent = (int *)malloc(sizeof(int) * G->numOfVertices);
+    int *inStack = (int *)malloc(sizeof(int) * G->numOfVertices);
+    int *inStack2 = (int *)malloc(sizeof(int) * G->numOfVertices);
+
+    for (int i = 0; i < G->numOfVertices; i++)
+    {
+        visited[i] = 0;
+        parent[i] = -1;
+        inStack[i] = 0;
+        curHead[i] = G->adjList[i].edgeListHeadPtr;
+    }
+
+    myStack s;
+    createStack(&s, G->numOfVertices);
+
+    myStack componentStack;
+    createStack(&componentStack, G->numOfVertices);
+
+    printf("DFS: ");
+    int w;
+    for (int u = 0; u < noOfVertices; u++)
+    {
+        if (visited[u] == 0)
+        {
+            push(&s, u);
+            G->adjList[u].dfsNum = clock;
+            G->adjList[u].lowNum = clock;
+            clock++;
+            visited[u] = 1;
+            push(&componentStack, u);
+            inStack[u] = 1;
+            inStack2[u] = 1;
+
+            int v;
+
+            while (s.top != -1) {
+                v = s.arrStack[s.top];
+
+                if (curHead[v]) {
+                    w = curHead[v]->vertex;
+                    if (visited[w] == 0) {
+                        push(&s, w);
+                        push(&componentStack, w);
+                        inStack2[w] = 1;
+                        inStack[w] = 1;
+                        visited[w] = 1;
+
+                        G->adjList[w].dfsNum = clock;
+                        G->adjList[w].lowNum = clock;
+                        clock++;
+                        curHead[v]->edgeType = 1;
+                    } else {
+                        if (G->adjList[w].dfsNum > G->adjList[v].dfsNum) {
+                            curHead[v]->edgeType = 2;
+                        } 
+                        else if (inStack2[w] == 0) {
+                            curHead[v]->edgeType = 4;
+                        } else {
+                            curHead[v]->edgeType = 3;
+                        }
+                        if (inStack[w] == 1) {
+                            G->adjList[v].lowNum = min(G->adjList[v].lowNum, G->adjList[w].dfsNum);
+                        }
+                    }
+                    curHead[v] = curHead[v]->linkPtr;
+                } else {
+                    pop(&s, &v);
+                    inStack2[v] = 0;
+                    if (s.top != -1) {
+                        int x = s.arrStack[s.top];
+                        G->adjList[x].lowNum = min(G->adjList[x].lowNum, G->adjList[v].lowNum);
+                    }
+
+                    if (G->adjList[v].dfsNum == G->adjList[v].lowNum) {
+                        int data = -1;
+                        printf("\n Component %d: ", compCnt);
+                        while (componentStack.top != -1 && data != v) {
+                            pop(&componentStack, &data);
+                            inStack[data] = 0;
+                            G->adjList[data].compNum = compCnt;
+                            printf("%d ", data);
+                        }
+                        compCnt++;
+                        G->numOfComp = compCnt;
+                    }
+                }
+            }
+        }
+    }
+    printf("\ncomponents = %d\n", G->numOfComp);
+    destroyStack(&s);
+}
+
 // [20 points] Returns 1 if the graph is strongly connected, 0 ow -- use low number
 int isStronglyConnected(myGraph *G)
 {
-    int flag = 0;
-    for (int i = 1; i < G->numOfVertices; i++) {
-        if (G->adjList[i].lowNum > G->adjList[i].dfsNum) {
-            flag = 1;
-            break;
-        }
-    }
-
-    if (flag) {
-        printf("Graph is not strongly connected.");
-        return -1;
-    }
+    if (G->numOfComp == 1)
+        return 0;
 
     return 0;
 }
@@ -232,7 +324,7 @@ int main()
     printf("#vertices = %d #edged = %d\n", G.numOfVertices, G.numOfEdges);
     printAdjList(&G);
 
-    dfs(&G);
+    dfs2(&G);
     printGraph(&G, "./dfs_mediumDG.dot");
 
     system("dot -Tpng ./dfs_mediumDG.dot -o ./dfs_mediumDG.png");
